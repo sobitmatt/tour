@@ -82,11 +82,13 @@ async function proceed() {
         roomId: slotId,
         userId
       });
-      // Request current users
-      console.log('Sending client-request-users:', { userId });
-      channel.trigger('client-request-users', {
-        userId
-      });
+      // Request current users with delay to ensure subscription
+      setTimeout(() => {
+        console.log('Sending client-request-users:', { userId });
+        channel.trigger('client-request-users', {
+          userId
+        });
+      }, 1000);
     });
     channel.bind('pusher:subscription_error', (error) => {
       console.error('Subscription error:', error);
@@ -149,7 +151,10 @@ async function initiateConnection(targetUserId, targetRoomId) {
     addVideoStream(targetUserId, event.streams[0], targetRoomId);
   };
 
-  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  localStream.getTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+    console.log('Added track:', track);
+  });
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
@@ -250,7 +255,10 @@ async function handleOffer(data) {
     target: data.userId
   });
 
-  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+  localStream.getTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+    console.log('Added track:', track);
+  });
 }
 
 // Handle WebRTC answer
@@ -304,7 +312,7 @@ function toggleVideo() {
 }
 
 // Leave room
-function leaveRoom() {
+async function leaveRoom() {
   console.log('Leaving room, sending client-leave:', { roomId, userId });
   channel.trigger('client-leave', {
     roomId,
