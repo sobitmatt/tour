@@ -24,6 +24,10 @@ pusher = new Pusher('0746c442e7028eaa0ee8', {
   auth: {
     headers: {
       'Content-Type': 'application/json'
+    },
+    params: {
+      socket_id: function() { return pusher.connection.socket_id; },
+      channel_name: 'private-point-system'
     }
   }
 });
