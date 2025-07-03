@@ -33,6 +33,7 @@ const userSelectionDiv = document.getElementById('user-selection');
 const videoCallDiv = document.getElementById('video-call');
 const roomNumberInput = document.getElementById('room-number');
 const userIdInput = document.getElementById('user-id');
+const leaveButton = document.getElementById('leave-button'); // 방 나가기 버튼
 
 // Proceed function
 async function proceed() {
@@ -88,7 +89,7 @@ async function proceed() {
         channel.trigger('client-request-users', {
           userId
         });
-      }, 1000);
+      }, 2000); // 2초 지연
     });
     channel.bind('pusher:subscription_error', (error) => {
       console.error('Subscription error:', error);
@@ -314,19 +315,25 @@ function toggleVideo() {
 // Leave room
 async function leaveRoom() {
   console.log('Leaving room, sending client-leave:', { roomId, userId });
-  channel.trigger('client-leave', {
-    roomId,
-    userId
-  });
+  if (channel) {
+    channel.trigger('client-leave', {
+      roomId,
+      userId
+    });
+  } else {
+    console.error('Channel not available for client-leave');
+  }
 
   // Stop tracks
   if (localStream) {
     localStream.getTracks().forEach(track => track.stop());
+    console.log('Stopped media tracks');
   }
 
   // Close peer connections
   Object.values(peerConnections).forEach(pc => pc.close());
   peerConnections = {};
+  console.log('Closed peer connections');
 
   // Reset UI
   document.querySelectorAll('.video-slot video').forEach(video => video.remove());
@@ -337,4 +344,14 @@ async function leaveRoom() {
   videoCallDiv.style.display = 'none';
   userSelectionDiv.style.display = 'block';
   console.log('Room left, UI reset');
+}
+
+// Bind leave button event
+if (leaveButton) {
+  leaveButton.addEventListener('click', () => {
+    console.log('Leave button clicked');
+    leaveRoom();
+  });
+} else {
+  console.error('Leave button not found');
 }
