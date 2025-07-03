@@ -19,7 +19,12 @@ let channel = null;
 Pusher.logToConsole = true;
 pusher = new Pusher('0746c442e7028eaa0ee8', {
   cluster: 'ap3',
-  authEndpoint: 'https://your-auth-server.onrender.com/pusher/auth' // Replace with actual Render URL
+  authEndpoint: 'https://auth-server-nwiv.onrender.com/pusher/auth',
+  auth: {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
 });
 
 // DOM elements
@@ -54,6 +59,7 @@ async function proceed() {
     addVideoStream(userId, localStream, slotId);
 
     // Subscribe to Pusher private channel
+    console.log('Subscribing to private-point-system...');
     channel = pusher.subscribe('private-point-system');
     channel.bind('pusher:subscription_succeeded', () => {
       console.log('Subscription succeeded');
@@ -73,11 +79,13 @@ async function proceed() {
     });
     channel.bind('client-join', (data) => {
       if (data.userId !== userId) {
+        console.log('Received client-join:', data);
         initiateConnection(data.userId, data.roomId);
       }
     });
     channel.bind('client-request-users', (data) => {
       if (data.userId !== userId) {
+        console.log('Received client-request-users:', data);
         channel.trigger('client-join', {
           roomId: slotId,
           userId
@@ -88,6 +96,7 @@ async function proceed() {
     channel.bind('client-answer', handleAnswer);
     channel.bind('client-candidate', handleCandidate);
     channel.bind('client-leave', (data) => {
+      console.log('Received client-leave:', data);
       removeVideoStream(data.userId, data.roomId);
     });
   } catch (error) {
@@ -105,6 +114,7 @@ async function initiateConnection(targetUserId, targetRoomId) {
 
   pc.onicecandidate = (event) => {
     if (event.candidate) {
+      console.log('Sending client-candidate:', event.candidate);
       channel.trigger('client-candidate', {
         candidate: event.candidate,
         roomId: targetRoomId,
@@ -115,6 +125,7 @@ async function initiateConnection(targetUserId, targetRoomId) {
   };
 
   pc.ontrack = (event) => {
+    console.log('Received track for:', targetUserId);
     addVideoStream(targetUserId, event.streams[0], targetRoomId);
   };
 
@@ -122,6 +133,7 @@ async function initiateConnection(targetUserId, targetRoomId) {
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
+  console.log('Sending client-offer:', offer);
   channel.trigger('client-offer', {
     offer,
     roomId: targetRoomId,
@@ -177,6 +189,7 @@ async function handleOffer(data) {
 
   pc.onicecandidate = (event) => {
     if (event.candidate) {
+      console.log('Sending client-candidate:', event.candidate);
       channel.trigger('client-candidate', {
         candidate: event.candidate,
         roomId: data.roomId,
@@ -187,12 +200,14 @@ async function handleOffer(data) {
   };
 
   pc.ontrack = (event) => {
+    console.log('Received track for:', data.userId);
     addVideoStream(data.userId, event.streams[0], data.roomId);
   };
 
   await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
+  console.log('Sending client-answer:', answer);
   channel.trigger('client-answer', {
     answer,
     roomId: data.roomId,
@@ -208,6 +223,7 @@ async function handleAnswer(data) {
   if (data.target !== userId) return;
   const pc = peerConnections[`${data.userId}-${data.roomId}`];
   if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+  console.log('Received client-answer:', data);
 }
 
 // Handle ICE candidate
@@ -215,6 +231,7 @@ async function handleCandidate(data) {
   if (data.target !== userId) return;
   const pc = peerConnections[`${data.userId}-${data.roomId}`];
   if (pc) await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+  console.log('Received client-candidate:', data);
 }
 
 // Toggle mute
