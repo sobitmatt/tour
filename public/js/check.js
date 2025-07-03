@@ -20,6 +20,7 @@ Pusher.logToConsole = true;
 pusher = new Pusher('0746c442e7028eaa0ee8', {
   cluster: 'ap3',
   authEndpoint: 'https://auth-server-nwiv.onrender.com/pusher/auth',
+  authTransport: 'ajax',
   auth: {
     headers: {
       'Content-Type': 'application/json'
