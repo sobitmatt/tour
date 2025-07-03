@@ -24,10 +24,6 @@ pusher = new Pusher('0746c442e7028eaa0ee8', {
   auth: {
     headers: {
       'Content-Type': 'application/json'
-    },
-    params: {
-      socket_id: function() { return pusher.connection.socket_id; },
-      channel_name: 'private-point-system'
     }
   }
 });
@@ -63,8 +59,20 @@ async function proceed() {
     const slotId = roomId === '교사' ? 'slot-teacher' : `slot-room${roomId}`;
     addVideoStream(userId, localStream, slotId);
 
+    // Wait for Pusher connection
+    await new Promise((resolve, reject) => {
+      pusher.connection.bind('connected', () => {
+        console.log('Pusher connected, socket_id:', pusher.connection.socket_id);
+        resolve();
+      });
+      pusher.connection.bind('error', (err) => {
+        console.error('Pusher connection error:', err);
+        reject(err);
+      });
+    });
+
     // Subscribe to Pusher private channel
-    console.log('Subscribing to private-point-system...');
+    console.log('Subscribing to private-point-system with socket_id:', pusher.connection.socket_id);
     channel = pusher.subscribe('private-point-system');
     channel.bind('pusher:subscription_succeeded', () => {
       console.log('Subscription succeeded');
