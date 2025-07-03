@@ -89,7 +89,7 @@ async function proceed() {
         channel.trigger('client-request-users', {
           userId
         });
-      }, 2000);
+      }, 3000); // 3초 지연
     });
     channel.bind('pusher:subscription_error', (error) => {
       console.error('Subscription error:', error);
