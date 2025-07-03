@@ -1,0 +1,149 @@
+body {
+  font-family: 'Noto Sans KR', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  color: #333;
+}
+
+header {
+  background: #005670;
+  color: white;
+  text-align: center;
+  padding: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+header a {
+  color: white;
+  text-decoration: none;
+}
+
+#hero {
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+#hero img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  border-radius: 10px;
+}
+
+.hero-content h2 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin: 1rem 0 0;
+}
+
+#overview {
+  padding: 3rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #fff;
+}
+
+#overview h2 {
+  font-size: 2.5rem;
+  color: #005670;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#overview .subtext {
+  font-size: 1.3rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.feature-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.text-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.text-content ul {
+  padding-left: 1.5rem;
+}
+
+.text-content li {
+  margin-bottom: 0.5rem;
+}
+
+.text-content ul ul {
+  padding-left: 2rem;
+}
+
+.image-content img {
+  width: 100%;
+  max-width: 600px;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+#call-to-action {
+  padding: 3rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  background: #e6f0fa;
+}
+
+#call-to-action p {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.kakao-button img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+
+footer {
+  background: #000;
+  color: white;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .feature-content {
+    flex-direction: column;
+  }
+}

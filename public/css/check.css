@@ -1,0 +1,176 @@
+/* check.css */
+
+/* Reset default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* Body styles */
+body {
+  background-color: #f0f2f5;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* User selection section */
+#user-selection {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+#user-selection h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#room-number, #user-id {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#user-selection button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+#user-selection button:hover {
+  background-color: #0056b3’.
+}
+
+/* Video call section */
+#video-call {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+}
+
+#video-call h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* 9-slot video grid */
+#video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.video-slot {
+  position: relative;
+  background-color: #000;
+  border-radius: 4px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.video-slot span {
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  z-index: 1;
+}
+
+.video-slot video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Controls section */
+#controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+#controls button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+#controls button:hover {
+  background-color: #218838;
+}
+
+#controls button:nth-child(2) {
+  background-color: #ffc107;
+}
+
+#controls button:nth-child(2):hover {
+  background-color: #e0a800;
+}
+
+#controls button:nth-child(3) {
+  background-color: #dc3545;
+}
+
+#controls button:nth-child(3):hover {
+  background-color: #c82333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  #video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .video-slot {
+    height: 150px;
+  }
+
+  #controls button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  #video-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .video-slot {
+    height: 120px;
+  }
+}
