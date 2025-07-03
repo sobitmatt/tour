@@ -14,7 +14,8 @@ const pusher = new Pusher({
 app.use(cors({
   origin: 'https://20250704.netlify.app',
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type'],
+  credentials: true
 }));
 app.use(express.json());
 
