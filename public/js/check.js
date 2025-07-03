@@ -45,7 +45,7 @@ async function proceed() {
   }
 
   try {
-    // Get user media (Teacher: audio only, Student: video + audio)
+    // Get user media
     localStream = await navigator.mediaDevices.getUserMedia({
       video: roomId === '교사' ? false : true,
       audio: true
@@ -77,11 +77,13 @@ async function proceed() {
     channel.bind('pusher:subscription_succeeded', () => {
       console.log('Subscription succeeded');
       // Send join event
+      console.log('Sending client-join:', { roomId: slotId, userId });
       channel.trigger('client-join', {
         roomId: slotId,
         userId
       });
       // Request current users
+      console.log('Sending client-request-users:', { userId });
       channel.trigger('client-request-users', {
         userId
       });
@@ -91,14 +93,15 @@ async function proceed() {
       alert('Pusher 채널 구독에 실패했습니다. 인증 서버를 확인하세요.');
     });
     channel.bind('client-join', (data) => {
+      console.log('Received client-join:', data);
       if (data.userId !== userId) {
-        console.log('Received client-join:', data);
         initiateConnection(data.userId, data.roomId);
       }
     });
     channel.bind('client-request-users', (data) => {
+      console.log('Received client-request-users:', data);
       if (data.userId !== userId) {
-        console.log('Received client-request-users:', data);
+        console.log('Responding with client-join:', { roomId: slotId, userId });
         channel.trigger('client-join', {
           roomId: slotId,
           userId
@@ -120,8 +123,12 @@ async function proceed() {
 
 // Initiate WebRTC connection
 async function initiateConnection(targetUserId, targetRoomId) {
-  if (peerConnections[`${targetUserId}-${targetRoomId}`]) return;
+  if (peerConnections[`${targetUserId}-${targetRoomId}`]) {
+    console.log('Connection already exists for:', targetUserId, targetRoomId);
+    return;
+  }
 
+  console.log('Initiating connection to:', targetUserId, targetRoomId);
   const pc = new RTCPeerConnection(configuration);
   peerConnections[`${targetUserId}-${targetRoomId}`] = pc;
 
@@ -158,7 +165,10 @@ async function initiateConnection(targetUserId, targetRoomId) {
 // Add video stream to grid
 function addVideoStream(id, stream, slotId) {
   const slot = document.getElementById(slotId);
-  if (!slot) return;
+  if (!slot) {
+    console.error('Slot not found:', slotId);
+    return;
+  }
 
   // Remove existing video if any
   const existingVideo = slot.querySelector('video');
@@ -175,12 +185,16 @@ function addVideoStream(id, stream, slotId) {
   if (label) label.textContent = `${id} (${slotId.replace('slot-', '') === 'teacher' ? '교사' : slotId.replace('slot-room', '') + '번 방'})`;
 
   slot.appendChild(video);
+  console.log('Video stream added for:', id, slotId);
 }
 
 // Remove video stream
 function removeVideoStream(id, slotId) {
   const slot = document.getElementById(slotId);
-  if (!slot) return;
+  if (!slot) {
+    console.error('Slot not found:', slotId);
+    return;
+  }
 
   const video = document.getElementById(`video-${id}-${slotId}`);
   if (video) video.remove();
@@ -189,14 +203,22 @@ function removeVideoStream(id, slotId) {
   if (label) label.textContent = slotId === 'slot-teacher' ? '교사' : slotId.replace('slot-room', '') + '번 방';
 
   delete peerConnections[`${id}-${slotId}`];
+  console.log('Video stream removed for:', id, slotId);
 }
 
 // Handle WebRTC offer
 async function handleOffer(data) {
-  if (data.target !== userId) return;
+  if (data.target !== userId) {
+    console.log('Offer ignored, not for this user:', data);
+    return;
+  }
 
-  if (peerConnections[`${data.userId}-${data.roomId}`]) return;
+  if (peerConnections[`${data.userId}-${data.roomId}`]) {
+    console.log('Connection already exists for:', data.userId, data.roomId);
+    return;
+  }
 
+  console.log('Handling offer from:', data.userId, data.roomId);
   const pc = new RTCPeerConnection(configuration);
   peerConnections[`${data.userId}-${data.roomId}`] = pc;
 
@@ -233,18 +255,32 @@ async function handleOffer(data) {
 
 // Handle WebRTC answer
 async function handleAnswer(data) {
-  if (data.target !== userId) return;
+  if (data.target !== userId) {
+    console.log('Answer ignored, not for this user:', data);
+    return;
+  }
   const pc = peerConnections[`${data.userId}-${data.roomId}`];
-  if (pc) await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-  console.log('Received client-answer:', data);
+  if (pc) {
+    await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+    console.log('Received client-answer:', data);
+  } else {
+    console.error('No peer connection found for:', data.userId, data.roomId);
+  }
 }
 
 // Handle ICE candidate
 async function handleCandidate(data) {
-  if (data.target !== userId) return;
+  if (data.target !== userId) {
+    console.log('Candidate ignored, not for this user:', data);
+    return;
+  }
   const pc = peerConnections[`${data.userId}-${data.roomId}`];
-  if (pc) await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-  console.log('Received client-candidate:', data);
+  if (pc) {
+    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+    console.log('Received client-candidate:', data);
+  } else {
+    console.error('No peer connection found for:', data.userId, data.roomId);
+  }
 }
 
 // Toggle mute
@@ -252,6 +288,7 @@ function toggleMute() {
   if (localStream) {
     localStream.getAudioTracks().forEach(track => {
       track.enabled = !track.enabled;
+      console.log('Audio track enabled:', track.enabled);
     });
   }
 }
@@ -261,12 +298,14 @@ function toggleVideo() {
   if (localStream) {
     localStream.getVideoTracks().forEach(track => {
       track.enabled = !track.enabled;
+      console.log('Video track enabled:', track.enabled);
     });
   }
 }
 
 // Leave room
 function leaveRoom() {
+  console.log('Leaving room, sending client-leave:', { roomId, userId });
   channel.trigger('client-leave', {
     roomId,
     userId
@@ -289,4 +328,5 @@ function leaveRoom() {
   });
   videoCallDiv.style.display = 'none';
   userSelectionDiv.style.display = 'block';
+  console.log('Room left, UI reset');
 }
