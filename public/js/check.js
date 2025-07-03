@@ -82,7 +82,7 @@ async function proceed() {
         roomId: slotId,
         userId
       });
-      // Request current users with delay to ensure subscription
+      // Request current users with delay
       setTimeout(() => {
         console.log('Sending client-request-users:', { userId });
         channel.trigger('client-request-users', {
