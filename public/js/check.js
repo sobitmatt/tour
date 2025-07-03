@@ -33,7 +33,7 @@ const userSelectionDiv = document.getElementById('user-selection');
 const videoCallDiv = document.getElementById('video-call');
 const roomNumberInput = document.getElementById('room-number');
 const userIdInput = document.getElementById('user-id');
-const leaveButton = document.getElementById('leave-button'); // 방 나가기 버튼
+const leaveButton = document.getElementById('leave-button');
 
 // Proceed function
 async function proceed() {
@@ -89,7 +89,7 @@ async function proceed() {
         channel.trigger('client-request-users', {
           userId
         });
-      }, 2000); // 2초 지연
+      }, 2000);
     });
     channel.bind('pusher:subscription_error', (error) => {
       console.error('Subscription error:', error);
@@ -103,7 +103,7 @@ async function proceed() {
     });
     channel.bind('client-request-users', (data) => {
       console.log('Received client-request-users:', data);
-      if (data.userId !== userId) {
+      if (data.userId !== userId && channel.subscribed) {
         console.log('Responding with client-join:', { roomId: slotId, userId });
         channel.trigger('client-join', {
           roomId: slotId,
@@ -315,13 +315,13 @@ function toggleVideo() {
 // Leave room
 async function leaveRoom() {
   console.log('Leaving room, sending client-leave:', { roomId, userId });
-  if (channel) {
+  if (channel && channel.subscribed) {
     channel.trigger('client-leave', {
       roomId,
       userId
     });
   } else {
-    console.error('Channel not available for client-leave');
+    console.error('Channel not available or not subscribed for client-leave');
   }
 
   // Stop tracks
@@ -344,6 +344,12 @@ async function leaveRoom() {
   videoCallDiv.style.display = 'none';
   userSelectionDiv.style.display = 'block';
   console.log('Room left, UI reset');
+
+  // Unsubscribe from channel
+  if (pusher && channel) {
+    pusher.unsubscribe('private-point-system');
+    console.log('Unsubscribed from private-point-system');
+  }
 }
 
 // Bind leave button event
