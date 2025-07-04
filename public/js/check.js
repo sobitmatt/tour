@@ -29,8 +29,7 @@ pusher = new Pusher('0746c442e7028eaa0ee8', {
   wsHost: 'ws-ap3.pusher.com',
   wsPort: 443,
   forceTLS: true,
-  disableStats: true,
-  enabledTransports: ['ws']
+  enableStats: false // disableStats 대신 사용
 });
 
 // DOM elements
@@ -77,8 +76,9 @@ async function proceed() {
       });
     });
 
-    // Subscribe to Pusher private channel
+    // Subscribe to Pusher private channel with delay
     console.log('Subscribing to private-point-system with socket_id:', pusher.connection.socket_id);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 대기
     channel = pusher.subscribe('private-point-system');
     channel.bind('pusher:subscription_succeeded', () => {
       console.log('Subscription succeeded');
