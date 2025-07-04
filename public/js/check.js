@@ -103,7 +103,7 @@ async function proceed() {
     });
     channel.bind('client-request-users', (data) => {
       console.log('Received client-request-users:', data);
-      if (data.userId !== userId && channel.subscribed) {
+      if (data.userId !== userId) {
         console.log('Responding with client-join:', { roomId: slotId, userId });
         channel.trigger('client-join', {
           roomId: slotId,
@@ -315,13 +315,13 @@ function toggleVideo() {
 // Leave room
 async function leaveRoom() {
   console.log('Leaving room, sending client-leave:', { roomId, userId });
-  if (channel && channel.subscribed) {
+  if (channel) {
     channel.trigger('client-leave', {
       roomId,
       userId
     });
   } else {
-    console.error('Channel not available or not subscribed for client-leave');
+    console.error('Channel not available for client-leave');
   }
 
   // Stop tracks
@@ -344,12 +344,6 @@ async function leaveRoom() {
   videoCallDiv.style.display = 'none';
   userSelectionDiv.style.display = 'block';
   console.log('Room left, UI reset');
-
-  // Unsubscribe from channel
-  if (pusher && channel) {
-    pusher.unsubscribe('private-point-system');
-    console.log('Unsubscribed from private-point-system');
-  }
 }
 
 // Bind leave button event

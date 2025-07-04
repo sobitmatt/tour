@@ -1,6 +1,5 @@
 /* check.css */
 
-/* Reset default styles */
 * {
   margin: 0;
   padding: 0;
@@ -8,7 +7,6 @@
   font-family: Arial, sans-serif;
 }
 
-/* Body styles */
 body {
   background-color: #f0f2f5;
   color: #333;
@@ -19,7 +17,6 @@ body {
   padding: 20px;
 }
 
-/* User selection section */
 #user-selection {
   background-color: #fff;
   padding: 20px;
@@ -57,10 +54,9 @@ body {
 }
 
 #user-selection button:hover {
-  background-color: #0056b3’.
+  background-color: #0056b3;
 }
 
-/* Video call section */
 #video-call {
   background-color: #fff;
   padding: 20px;
@@ -76,8 +72,7 @@ body {
   text-align: center;
 }
 
-/* 9-slot video grid */
-#video-grid {
+.video-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
@@ -111,14 +106,13 @@ body {
   left: 0;
 }
 
-/* Controls section */
-#controls {
+.controls {
   display: flex;
   justify-content: center;
   gap: 10px;
 }
 
-#controls button {
+.controls button {
   background-color: #28a745;
   color: #fff;
   padding: 10px 20px;
@@ -129,29 +123,28 @@ body {
   transition: background-color 0.3s;
 }
 
-#controls button:hover {
+.controls button:hover {
   background-color: #218838;
 }
 
-#controls button:nth-child(2) {
+.controls button:nth-child(2) {
   background-color: #ffc107;
 }
 
-#controls button:nth-child(2):hover {
+.controls button:nth-child(2):hover {
   background-color: #e0a800;
 }
 
-#controls button:nth-child(3) {
+.controls button:nth-child(3) {
   background-color: #dc3545;
 }
 
-#controls button:nth-child(3):hover {
+.controls button:nth-child(3):hover {
   background-color: #c82333;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
-  #video-grid {
+  .video-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -159,14 +152,14 @@ body {
     height: 150px;
   }
 
-  #controls button {
+  .controls button {
     padding: 8px 16px;
     font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
-  #video-grid {
+  .video-grid {
     grid-template-columns: 1fr;
   }
 
