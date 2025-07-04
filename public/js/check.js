@@ -25,7 +25,12 @@ pusher = new Pusher('0746c442e7028eaa0ee8', {
     headers: {
       'Content-Type': 'application/json'
     }
-  }
+  },
+  wsHost: 'ws-ap3.pusher.com',
+  wsPort: 443,
+  forceTLS: true,
+  disableStats: true,
+  enabledTransports: ['ws']
 });
 
 // DOM elements
@@ -89,7 +94,7 @@ async function proceed() {
         channel.trigger('client-request-users', {
           userId
         });
-      }, 3000); // 3초 지연
+      }, 3000);
     });
     channel.bind('pusher:subscription_error', (error) => {
       console.error('Subscription error:', error);
